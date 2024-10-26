@@ -8,6 +8,6 @@ package dao;
  *
  * @author Admin
  */
-public class vjp2 {
+public class UserDAO {
     
 }
