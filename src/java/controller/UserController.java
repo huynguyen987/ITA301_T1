@@ -75,6 +75,9 @@ public class UserController extends HttpServlet {
                 case "create":
                     registerUser(request, response);
                     break;
+                case "admin":
+                    listUsersForAdmin(request, response);
+                    break;
                 default:
                     listUser(request, response);
                     break;
@@ -190,7 +193,7 @@ public class UserController extends HttpServlet {
         dispatcher.forward(request, response);
     }
 
-    // Authenticate user login
+    // Authenticate user login with role check
     private void authenticateUser(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
         String userName = request.getParameter("userName");
@@ -200,7 +203,15 @@ public class UserController extends HttpServlet {
         if (user != null) {
             HttpSession session = request.getSession();
             session.setAttribute("loggedUser", user);
-            response.sendRedirect("user?action=list");
+
+            // Check if the user has an admin role
+            if (user.getRole() != null && "Admin".equalsIgnoreCase(user.getRole().getName())) {
+                // Redirect to admin page if the user is an admin
+                response.sendRedirect(request.getContextPath() + "/user?action=admin");
+            } else {
+                // Redirect to user dashboard or a default page if not admin
+                response.sendRedirect(request.getContextPath() + "/user?action=list");
+            }
         } else {
             request.setAttribute("errorMessage", "Invalid username or password");
             RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/login.jsp");
@@ -245,4 +256,12 @@ public class UserController extends HttpServlet {
         response.sendRedirect(request.getContextPath() + "/user?action=login");
     }
 
+    // List users for the admin page
+    private void listUsersForAdmin(HttpServletRequest request, HttpServletResponse response)
+            throws SQLException, IOException, ServletException {
+        List<User> listUser = userDAO.selectAllUsers();
+        request.setAttribute("listUser", listUser);
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/admin.jsp");
+        dispatcher.forward(request, response);
+    }
 }
