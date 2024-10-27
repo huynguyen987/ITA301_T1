@@ -78,6 +78,9 @@ public class UserController extends HttpServlet {
                 case "admin":
                     listUsersForAdmin(request, response);
                     break;
+                case "userDashboard":  // New case for user dashboard
+                    showUserDashboard(request, response);
+                    break;
                 default:
                     listUser(request, response);
                     break;
@@ -187,7 +190,11 @@ public class UserController extends HttpServlet {
     private void deleteUser(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException {
         int id = Integer.parseInt(request.getParameter("id"));
-        userDAO.deleteUser(id);
+        User user = userDAO.selectUser(id);
+        user.setStatus(false);  // Set the user as inactive
+
+        // Update the user instead of deleting
+        userDAO.updateUser(user);
         response.sendRedirect(request.getContextPath() + "/user?action=admin");
     }
 
@@ -224,10 +231,13 @@ public class UserController extends HttpServlet {
             HttpSession session = request.getSession();
             session.setAttribute("loggedUser", user);
 
+            // Check user role and redirect accordingly
             if (user.getRole() != null && "Admin".equalsIgnoreCase(user.getRole().getName())) {
+                // Redirect to admin dashboard if the user is an admin
                 response.sendRedirect(request.getContextPath() + "/user?action=admin");
             } else {
-                response.sendRedirect(request.getContextPath() + "/user?action=list");
+                // Redirect to user dashboard or a default page if the user is not admin
+                response.sendRedirect(request.getContextPath() + "/user?action=userDashboard");
             }
         } else {
             request.setAttribute("errorMessage", "Invalid username or password");
@@ -283,6 +293,13 @@ public class UserController extends HttpServlet {
         // Define the password pattern
         String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*(),.?\":{}|<>]).{8,}$";
         return password != null && password.matches(passwordPattern);
+    }
+
+    // Display user dashboard for non-admin users
+    private void showUserDashboard(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/user-dashboard.jsp");
+        dispatcher.forward(request, response);
     }
 
 }
