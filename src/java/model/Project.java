@@ -140,6 +140,11 @@ public class Project {
         this.updatedBy = updatedBy;
     }
 
+    @Override
+    public String toString() {
+        return "Project{" + "projectId=" + projectId + ", name=" + name + ", code=" + code + ", startDate=" + startDate + ", endDate=" + endDate + ", department=" + department + ", status=" + status + ", description=" + description + ", createdAt=" + createdAt + ", createdBy=" + createdBy + ", updatedAt=" + updatedAt + ", updatedBy=" + updatedBy + '}';
+    }
+
     
 }
 

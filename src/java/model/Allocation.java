@@ -146,6 +146,11 @@ public class Allocation {
         this.updatedBy = updatedBy;
     }
 
+    @Override
+    public String toString() {
+        return "Allocation{" + "allocationId=" + allocationId + ", member=" + member + ", project=" + project + ", projectRole=" + projectRole + ", fromDate=" + fromDate + ", toDate=" + toDate + ", effortRate=" + effortRate + ", description=" + description + ", status=" + status + ", createdAt=" + createdAt + ", createdBy=" + createdBy + ", updatedAt=" + updatedAt + ", updatedBy=" + updatedBy + '}';
+    }
+
     
 }
 

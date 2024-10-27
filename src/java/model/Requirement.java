@@ -119,6 +119,11 @@ public class Requirement {
         this.updatedBy = updatedBy;
     }
 
+    @Override
+    public String toString() {
+        return "Requirement{" + "reqId=" + reqId + ", title=" + title + ", owner=" + owner + ", complexity=" + complexity + ", status=" + status + ", description=" + description + ", createdAt=" + createdAt + ", createdBy=" + createdBy + ", updatedAt=" + updatedAt + ", updatedBy=" + updatedBy + '}';
+    }
+
     
 }
 

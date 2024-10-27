@@ -161,6 +161,11 @@ public class Issue {
         this.updatedBy = updatedBy;
     }
 
+    @Override
+    public String toString() {
+        return "Issue{" + "issueId=" + issueId + ", title=" + title + ", type=" + type + ", requirement=" + requirement + ", assigner=" + assigner + ", assignee=" + assignee + ", deadline=" + deadline + ", status=" + status + ", statusDate=" + statusDate + ", description=" + description + ", createdAt=" + createdAt + ", createdBy=" + createdBy + ", updatedAt=" + updatedAt + ", updatedBy=" + updatedBy + '}';
+    }
+
     
 }
 
