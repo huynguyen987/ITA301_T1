@@ -221,25 +221,28 @@ public class UserController extends HttpServlet {
         dispatcher.forward(request, response);
     }
 
-    // Register a new user
+    // Register a new user with basic information
     private void registerUser(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException {
         String fullName = request.getParameter("fullName");
         String userName = request.getParameter("userName");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
-        int roleId = Integer.parseInt(request.getParameter("roleId"));
-        int deptId = Integer.parseInt(request.getParameter("deptId"));
-        Date startDate = Date.valueOf(request.getParameter("startDate"));
-        boolean status = Boolean.parseBoolean(request.getParameter("status"));
-        String note = request.getParameter("note");
 
-        Setting role = settingDAO.selectSetting(roleId);
-        Setting department = settingDAO.selectSetting(deptId);
+        // Since roles and departments are set only by admin, set them to null or a default value
+        Setting role = null;  // Default role could also be set here if needed
+        Setting department = null;
+
+        // Optionally, set a default start date or use a current date
+        Date startDate = new Date(System.currentTimeMillis());  // or any other default
+        boolean status = true;  // Assuming new users are active by default
+        String note = "";
+
+        // Create a user object with null for role and department
         User user = new User(fullName, userName, email, password, role, department, startDate, status, note);
 
         userDAO.registerUser(user);
         response.sendRedirect(request.getContextPath() + "/user?action=login");
-
     }
+
 }

@@ -1,5 +1,6 @@
 package dao;
 
+import service.DBConnect;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,24 +30,41 @@ public class UserDAO {
     private static final String DELETE_USER_SQL = "DELETE FROM user WHERE user_id = ?";
     private static final String SELECT_USER_BY_USERNAME_PASSWORD = "SELECT * FROM user WHERE user_name = ? AND password = ?";
 
-    // Register a new user
-    public void registerUser(User user) throws SQLException {
-        try (Connection connection = DBConnect.getConnection(); 
-             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_USER_SQL)) {
-            preparedStatement.setString(1, user.getFullName());
-            preparedStatement.setString(2, user.getUserName());
-            preparedStatement.setString(3, user.getEmail());
-            preparedStatement.setString(4, user.getPassword());
+    // Register a new user with defaults for some fields
+public void registerUser(User user) throws SQLException {
+    try (Connection connection = DBConnect.getConnection(); 
+         PreparedStatement preparedStatement = connection.prepareStatement(INSERT_USER_SQL)) {
+        preparedStatement.setString(1, user.getFullName());
+        preparedStatement.setString(2, user.getUserName());
+        preparedStatement.setString(3, user.getEmail());
+        preparedStatement.setString(4, user.getPassword());
+
+        // Handle null role and department by setting SQL NULL
+        if (user.getRole() != null) {
             preparedStatement.setInt(5, user.getRole().getSettingId());
-            preparedStatement.setInt(6, user.getDepartment().getSettingId());
-            preparedStatement.setDate(7, user.getStartDate());
-            preparedStatement.setBoolean(8, user.isStatus());
-            preparedStatement.setString(9, user.getNote());
-            preparedStatement.setInt(10, user.getCreatedBy() != null ? user.getCreatedBy().getUserId() : 1);
-            preparedStatement.setInt(11, user.getUpdatedBy() != null ? user.getUpdatedBy().getUserId() : 1);
-            preparedStatement.executeUpdate();
+        } else {
+            preparedStatement.setNull(5, java.sql.Types.INTEGER);
         }
+
+        if (user.getDepartment() != null) {
+            preparedStatement.setInt(6, user.getDepartment().getSettingId());
+        } else {
+            preparedStatement.setNull(6, java.sql.Types.INTEGER);
+        }
+
+        preparedStatement.setDate(7, user.getStartDate());
+        preparedStatement.setBoolean(8, user.isStatus());
+        preparedStatement.setString(9, user.getNote());
+
+        // Assuming created_by_id and updated_by_id can be defaulted to a certain value, like 1 (Admin)
+        preparedStatement.setInt(10, 1);
+        preparedStatement.setInt(11, 1);
+
+        preparedStatement.executeUpdate();
     }
+}
+
+
 
     // Authenticate user (login)
     public User loginUser(String userName, String password) {
