@@ -87,12 +87,12 @@ public class UserController extends HttpServlet {
         }
     }
 
-    // Display list of users
+    // Display list of users (Default action)
     private void listUser(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
         List<User> listUser = userDAO.selectAllUsers();
         request.setAttribute("listUser", listUser);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/user-list.jsp");
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/admin.jsp");
         dispatcher.forward(request, response);
     }
 
@@ -101,9 +101,14 @@ public class UserController extends HttpServlet {
             throws ServletException, IOException {
         List<Setting> roles = settingDAO.selectAllRoles();
         List<Setting> departments = settingDAO.selectAllDepartments();
+        List<User> listUser = userDAO.selectAllUsers(); // Fetch user list for admin view
+
         request.setAttribute("roles", roles);
         request.setAttribute("departments", departments);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/user-form.jsp");
+        request.setAttribute("listUser", listUser);
+        request.setAttribute("action", "new");
+
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/admin.jsp");
         dispatcher.forward(request, response);
     }
 
@@ -114,10 +119,15 @@ public class UserController extends HttpServlet {
         User existingUser = userDAO.selectUser(id);
         List<Setting> roles = settingDAO.selectAllRoles();
         List<Setting> departments = settingDAO.selectAllDepartments();
+        List<User> listUser = userDAO.selectAllUsers(); // Fetch user list for admin view
+
         request.setAttribute("user", existingUser);
         request.setAttribute("roles", roles);
         request.setAttribute("departments", departments);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/user-form.jsp");
+        request.setAttribute("listUser", listUser);
+        request.setAttribute("action", "edit");
+
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/admin.jsp");
         dispatcher.forward(request, response);
     }
 
