@@ -245,21 +245,27 @@ public class UserController extends HttpServlet {
 
     // Register a new user with basic information
     private void registerUser(HttpServletRequest request, HttpServletResponse response)
-            throws SQLException, IOException {
+            throws SQLException, IOException, ServletException {
         String fullName = request.getParameter("fullName");
         String userName = request.getParameter("userName");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
+        // Server-side password validation
+        if (!isPasswordValid(password)) {
+            request.setAttribute("errorMessage", "Password must be at least 8 characters, contain uppercase, lowercase, a number, and a special character.");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/register.jsp");
+            dispatcher.forward(request, response);
+            return;
+        }
+
         Setting role = null;
         Setting department = null;
-
         Date startDate = new Date(System.currentTimeMillis());
         boolean status = true;
         String note = "";
 
         User user = new User(fullName, userName, email, password, role, department, startDate, status, note);
-
         userDAO.registerUser(user);
         response.sendRedirect(request.getContextPath() + "/user?action=login");
     }
@@ -272,4 +278,11 @@ public class UserController extends HttpServlet {
         RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/admin.jsp");
         dispatcher.forward(request, response);
     }
+
+    private boolean isPasswordValid(String password) {
+        // Define the password pattern
+        String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*(),.?\":{}|<>]).{8,}$";
+        return password != null && password.matches(passwordPattern);
+    }
+
 }
