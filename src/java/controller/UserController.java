@@ -92,7 +92,7 @@ public class UserController extends HttpServlet {
             throws SQLException, IOException, ServletException {
         List<User> listUser = userDAO.selectAllUsers();
         request.setAttribute("listUser", listUser);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("user-list.jsp");
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/user-list.jsp");
         dispatcher.forward(request, response);
     }
 
@@ -103,7 +103,7 @@ public class UserController extends HttpServlet {
         List<Setting> departments = settingDAO.selectAllDepartments();
         request.setAttribute("roles", roles);
         request.setAttribute("departments", departments);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("user-form.jsp");
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/user-form.jsp");
         dispatcher.forward(request, response);
     }
 
@@ -117,7 +117,7 @@ public class UserController extends HttpServlet {
         request.setAttribute("user", existingUser);
         request.setAttribute("roles", roles);
         request.setAttribute("departments", departments);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("user-form.jsp");
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/user-form.jsp");
         dispatcher.forward(request, response);
     }
 
@@ -138,9 +138,13 @@ public class UserController extends HttpServlet {
         Setting department = settingDAO.selectSetting(deptId);
         User user = new User(fullName, userName, email, password, role, department, startDate, status, note);
 
-        userDAO.insertUser(user);
-        response.sendRedirect(request.getContextPath() + "/user?action=list");
+        HttpSession session = request.getSession(false);
+        User adminUser = (User) session.getAttribute("loggedUser");
+        user.setCreatedBy(adminUser);
+        user.setUpdatedBy(adminUser);
 
+        userDAO.insertUser(user);
+        response.sendRedirect(request.getContextPath() + "/user?action=admin");
     }
 
     // Update an existing user's details
@@ -161,9 +165,12 @@ public class UserController extends HttpServlet {
         Setting department = settingDAO.selectSetting(deptId);
         User user = new User(id, fullName, userName, email, password, role, department, startDate, status, note, null, null);
 
-        userDAO.updateUser(user);
-        response.sendRedirect(request.getContextPath() + "/user?action=list");
+        HttpSession session = request.getSession(false);
+        User adminUser = (User) session.getAttribute("loggedUser");
+        user.setUpdatedBy(adminUser);
 
+        userDAO.updateUser(user);
+        response.sendRedirect(request.getContextPath() + "/user?action=admin");
     }
 
     // Delete a user
@@ -171,8 +178,7 @@ public class UserController extends HttpServlet {
             throws SQLException, IOException {
         int id = Integer.parseInt(request.getParameter("id"));
         userDAO.deleteUser(id);
-        response.sendRedirect(request.getContextPath() + "/user?action=list");
-
+        response.sendRedirect(request.getContextPath() + "/user?action=admin");
     }
 
     // Activate/Deactivate a user
@@ -180,10 +186,14 @@ public class UserController extends HttpServlet {
             throws SQLException, IOException {
         int id = Integer.parseInt(request.getParameter("id"));
         User user = userDAO.selectUser(id);
-        user.setStatus(activate);  // Set user status to true (activate) or false (deactivate)
-        userDAO.updateUser(user);
-        response.sendRedirect(request.getContextPath() + "/user?action=list");
+        user.setStatus(activate);
 
+        HttpSession session = request.getSession(false);
+        User adminUser = (User) session.getAttribute("loggedUser");
+        user.setUpdatedBy(adminUser);
+
+        userDAO.updateUser(user);
+        response.sendRedirect(request.getContextPath() + "/user?action=admin");
     }
 
     // Show login form
@@ -204,12 +214,9 @@ public class UserController extends HttpServlet {
             HttpSession session = request.getSession();
             session.setAttribute("loggedUser", user);
 
-            // Check if the user has an admin role
             if (user.getRole() != null && "Admin".equalsIgnoreCase(user.getRole().getName())) {
-                // Redirect to admin page if the user is an admin
                 response.sendRedirect(request.getContextPath() + "/user?action=admin");
             } else {
-                // Redirect to user dashboard or a default page if not admin
                 response.sendRedirect(request.getContextPath() + "/user?action=list");
             }
         } else {
@@ -222,12 +229,6 @@ public class UserController extends HttpServlet {
     // Show registration form
     private void showRegisterForm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        List<Setting> roles = settingDAO.selectAllRoles();
-        List<Setting> departments = settingDAO.selectAllDepartments();
-        System.out.println("Roles: " + roles);  // Debug
-        System.out.println("Departments: " + departments);  // Debug
-        request.setAttribute("roles", roles);
-        request.setAttribute("departments", departments);
         RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/register.jsp");
         dispatcher.forward(request, response);
     }
@@ -240,16 +241,13 @@ public class UserController extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        // Since roles and departments are set only by admin, set them to null or a default value
-        Setting role = null;  // Default role could also be set here if needed
+        Setting role = null;
         Setting department = null;
 
-        // Optionally, set a default start date or use a current date
-        Date startDate = new Date(System.currentTimeMillis());  // or any other default
-        boolean status = true;  // Assuming new users are active by default
+        Date startDate = new Date(System.currentTimeMillis());
+        boolean status = true;
         String note = "";
 
-        // Create a user object with null for role and department
         User user = new User(fullName, userName, email, password, role, department, startDate, status, note);
 
         userDAO.registerUser(user);

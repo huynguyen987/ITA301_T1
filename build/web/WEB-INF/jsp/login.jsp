@@ -1,4 +1,3 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +6,7 @@
 </head>
 <body>
     <h2>Login</h2>
-    <form action="<c:url value='/user?action=authenticate' />" method="post">
+    <form action="${pageContext.request.contextPath}/user?action=authenticate" method="post">
         <label for="userName">Username:</label>
         <input type="text" name="userName" required>
         
@@ -16,11 +15,10 @@
         
         <button type="submit">Login</button>
         
-        <!-- Display an error message if login fails -->
-        <c:if test="${not empty errorMessage}">
-            <div style="color: red;">${errorMessage}</div>
-        </c:if>
+        <% if (request.getAttribute("errorMessage") != null) { %>
+            <div style="color: red;"><%= request.getAttribute("errorMessage") %></div>
+        <% } %>
     </form>
-    <p>Don't have an account? <a href="<c:url value='/user?action=register' />">Register here</a></p>
+    <p>Don't have an account? <a href="${pageContext.request.contextPath}/user?action=register">Register here</a></p>
 </body>
 </html>

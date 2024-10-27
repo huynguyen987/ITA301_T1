@@ -1,4 +1,3 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,8 +6,7 @@
 </head>
 <body>
     <h2>Register</h2>
-    <form action="<c:url value='/user?action=create' />" method="post">
-        <!-- Basic information for registration -->
+    <form action="${pageContext.request.contextPath}/user?action=create" method="post">
         <label for="fullName">Full Name:</label>
         <input type="text" name="fullName" required>
         
@@ -23,6 +21,6 @@
         
         <button type="submit">Register</button>
     </form>
-    <p>Already have an account? <a href="<c:url value='/user?action=login' />">Login here</a></p>
+    <p>Already have an account? <a href="${pageContext.request.contextPath}/user?action=login">Login here</a></p>
 </body>
 </html>
