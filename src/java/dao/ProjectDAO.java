@@ -1,8 +1,6 @@
 package dao;
 
 import model.Project;
-import model.Setting;
-import model.User;
 import service.DBConnect;
 
 import java.sql.Connection;
@@ -12,179 +10,190 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Data Access Object cho thực thể Project.
- */
 public class ProjectDAO {
+    private static final String INSERT_PROJECT_SQL = "INSERT INTO project (name, code, start_date, end_date, status, description) VALUES (?, ?, ?, ?, ?, ?)";
+    private static final String SELECT_ALL_PROJECTS = "SELECT project_id, name, code, start_date, end_date, status, description FROM project";
+    private static final String SELECT_PROJECT_BY_ID = "SELECT project_id, name, code, start_date, end_date, status, description FROM project WHERE project_id = ?";
+    private static final String UPDATE_PROJECT_SQL = "UPDATE project SET name = ?, code = ?, start_date = ?, end_date = ?, status = ?, description = ? WHERE project_id = ?";
+    private static final String TOGGLE_STATUS_SQL = "UPDATE project SET status = NOT status WHERE project_id = ?";
 
-    // Danh sách các cột được phép sắp xếp để ngăn ngừa SQL Injection
-    private static final List<String> ALLOWED_SORT_COLUMNS = List.of(
-            "project.project_id",
-            "project.name",
-            "project.code",
-            "project.start_date",
-            "project.end_date",
-            "project.status"
-    );
-
-    /**
-     * Lấy danh sách các dự án đã sắp xếp và phân trang.
-     *
-     * @param sortColumn    Cột để sắp xếp (ví dụ: "project.name")
-     * @param sortOrder     Thứ tự sắp xếp ("ASC" hoặc "DESC")
-     * @param limit         Số bản ghi trên mỗi trang
-     * @param offset        Vị trí bắt đầu lấy dữ liệu
-     * @return Danh sách các dự án
-     * @throws SQLException Nếu có lỗi truy cập cơ sở dữ liệu
-     */
-    public List<Project> getProjects(String sortColumn, String sortOrder, int limit, int offset) throws SQLException {
-        // Kiểm tra tính hợp lệ của cột sắp xếp
-        if (!ALLOWED_SORT_COLUMNS.contains(sortColumn)) {
-            sortColumn = "project.project_id"; // Mặc định sắp xếp theo ID
-        }
-
-        // Kiểm tra tính hợp lệ của thứ tự sắp xếp
-        if (!sortOrder.equalsIgnoreCase("DESC")) {
-            sortOrder = "ASC"; // Mặc định sắp xếp tăng dần
-        }
-
-        String sql = "SELECT " +
-                "project.project_id, project.name, project.code, project.start_date, project.end_date, " +
-                "project.status, project.description, project.created_at, project.updated_at, " +
-                "dept.setting_id AS dept_id, dept.name AS dept_name, " +
-                "created_by_user.user_id AS created_by_id, created_by_user.full_name AS created_by_full_name, " +
-                "updated_by_user.user_id AS updated_by_id, updated_by_user.full_name AS updated_by_full_name " +
-                "FROM project " +
-                "LEFT JOIN setting AS dept ON project.dept_id = dept.setting_id " +
-                "LEFT JOIN user AS created_by_user ON project.created_by_id = created_by_user.user_id " +
-                "LEFT JOIN user AS updated_by_user ON project.updated_by_id = updated_by_user.user_id " +
-                "ORDER BY " + sortColumn + " " + sortOrder + " " +
-                "LIMIT ? OFFSET ?";
-
-        List<Project> projects = new ArrayList<>();
-
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, limit);
-            stmt.setInt(2, offset);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    Project project = mapResultSetToProject(rs);
-                    projects.add(project);
-                }
+    public void insertProject(Project project) throws SQLException {
+        try (Connection connection = DBConnect.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_PROJECT_SQL)) {
+            preparedStatement.setString(1, project.getName());
+            preparedStatement.setString(2, project.getCode());
+            preparedStatement.setDate(3, project.getStartDate());
+            if (project.getEndDate() != null) {
+                preparedStatement.setDate(4, project.getEndDate());
+            } else {
+                preparedStatement.setNull(4, java.sql.Types.DATE);
             }
+            preparedStatement.setBoolean(5, project.isStatus());
+            preparedStatement.setString(6, project.getDescription());
+
+            preparedStatement.executeUpdate();
+            System.out.println("Inserted project: " + project.getName());
+        } catch (SQLException e) {
+            printSQLException(e);
+            throw e;
+        }
+    }
+
+    public List<Project> selectAllProjects(String sort, String order, String search) {
+        List<Project> projects = new ArrayList<>();
+        // Validate sort and order parameters to prevent SQL injection
+        String sortColumn;
+        switch (sort) {
+            case "project.name":
+                sortColumn = "name";
+                break;
+            case "project.code":
+                sortColumn = "code";
+                break;
+            case "project.start_date":
+                sortColumn = "start_date";
+                break;
+            case "project.end_date":
+                sortColumn = "end_date";
+                break;
+            case "project.status":
+                sortColumn = "status";
+                break;
+            case "project.project_id":
+            default:
+                sortColumn = "project_id";
+                break;
+        }
+
+        String sortOrder = "ASC".equalsIgnoreCase(order) ? "ASC" : "DESC";
+
+        // Start building the query
+        StringBuilder queryBuilder = new StringBuilder(SELECT_ALL_PROJECTS);
+
+        // Add WHERE clause if search is provided
+        if (search != null && !search.trim().isEmpty()) {
+            queryBuilder.append(" WHERE name LIKE ?");
+        }
+
+        // Add ORDER BY clause
+        queryBuilder.append(" ORDER BY ").append(sortColumn).append(" ").append(sortOrder);
+
+        String query = queryBuilder.toString();
+
+        try (Connection connection = DBConnect.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            if (search != null && !search.trim().isEmpty()) {
+                preparedStatement.setString(1, "%" + search.trim() + "%");
+            }
+
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                int projectId = rs.getInt("project_id");
+                String name = rs.getString("name");
+                String code = rs.getString("code");
+                java.sql.Date startDate = rs.getDate("start_date");
+                java.sql.Date endDate = rs.getDate("end_date");
+                boolean status = rs.getBoolean("status");
+                String description = rs.getString("description");
+
+                Project project = new Project(projectId, name, code, startDate, endDate, status, description);
+                projects.add(project);
+            }
+            System.out.println("Fetched " + projects.size() + " projects.");
+        } catch (SQLException e) {
+            printSQLException(e);
         }
 
         return projects;
     }
 
-    /**
-     * Lấy tổng số dự án trong cơ sở dữ liệu.
-     *
-     * @return Tổng số dự án
-     * @throws SQLException Nếu có lỗi truy cập cơ sở dữ liệu
-     */
-    public int getTotalProjects() throws SQLException {
-        String sql = "SELECT COUNT(*) AS total FROM project";
-
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-
-            if (rs.next()) {
-                return rs.getInt("total");
-            }
-        }
-
-        return 0;
-    }
-
-    /**
-     * Lấy thông tin chi tiết của một dự án dựa trên projectId.
-     *
-     * @param projectId ID của dự án cần lấy thông tin.
-     * @return Đối tượng Project chứa thông tin chi tiết, hoặc null nếu không tìm thấy.
-     * @throws SQLException Nếu có lỗi truy cập cơ sở dữ liệu.
-     */
-    public Project getProject(int projectId) throws SQLException {
-        String sql = "SELECT " +
-                "project.project_id, project.name, project.code, project.start_date, project.end_date, " +
-                "project.status, project.description, project.created_at, project.updated_at, " +
-                "dept.setting_id AS dept_id, dept.name AS dept_name, " +
-                "created_by_user.user_id AS created_by_id, created_by_user.full_name AS created_by_full_name, " +
-                "updated_by_user.user_id AS updated_by_id, updated_by_user.full_name AS updated_by_full_name " +
-                "FROM project " +
-                "LEFT JOIN setting AS dept ON project.dept_id = dept.setting_id " +
-                "LEFT JOIN user AS created_by_user ON project.created_by_id = created_by_user.user_id " +
-                "LEFT JOIN user AS updated_by_user ON project.updated_by_id = updated_by_user.user_id " +
-                "WHERE project.project_id = ?";
-
+    public Project selectProjectById(int projectId) {
         Project project = null;
 
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection connection = DBConnect.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(SELECT_PROJECT_BY_ID)) {
+            preparedStatement.setInt(1, projectId);
+            ResultSet rs = preparedStatement.executeQuery();
 
-            stmt.setInt(1, projectId);
+            if (rs.next()) {
+                String name = rs.getString("name");
+                String code = rs.getString("code");
+                java.sql.Date startDate = rs.getDate("start_date");
+                java.sql.Date endDate = rs.getDate("end_date");
+                boolean status = rs.getBoolean("status");
+                String description = rs.getString("description");
 
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    project = mapResultSetToProject(rs);
+                project = new Project(projectId, name, code, startDate, endDate, status, description);
+            }
+            System.out.println("Fetched project by ID " + projectId + ": " + (project != null ? project.getName() : "Not Found"));
+        } catch (SQLException e) {
+            printSQLException(e);
+        }
+
+        return project;
+    }
+
+    public void updateProject(Project project) throws SQLException {
+        try (Connection connection = DBConnect.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_PROJECT_SQL)) {
+            preparedStatement.setString(1, project.getName());
+            preparedStatement.setString(2, project.getCode());
+            preparedStatement.setDate(3, project.getStartDate());
+            if (project.getEndDate() != null) {
+                preparedStatement.setDate(4, project.getEndDate());
+            } else {
+                preparedStatement.setNull(4, java.sql.Types.DATE);
+            }
+            preparedStatement.setBoolean(5, project.isStatus());
+            preparedStatement.setString(6, project.getDescription());
+            preparedStatement.setInt(7, project.getProjectId());
+
+            int rowsUpdated = preparedStatement.executeUpdate();
+            if (rowsUpdated > 0) {
+                System.out.println("Updated project ID " + project.getProjectId() + ": " + project.getName());
+            } else {
+                System.out.println("No project found with ID " + project.getProjectId());
+            }
+        } catch (SQLException e) {
+            printSQLException(e);
+            throw e;
+        }
+    }
+
+    // Phương thức mới để thay đổi trạng thái dự án
+    public boolean toggleProjectStatus(int projectId) throws SQLException {
+        boolean updated = false;
+        try (Connection connection = DBConnect.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(TOGGLE_STATUS_SQL)) {
+            preparedStatement.setInt(1, projectId);
+            int rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected > 0) {
+                updated = true;
+            }
+        } catch (SQLException e) {
+            printSQLException(e);
+            throw e;
+        }
+        return updated;
+    }
+
+    // Các phương thức khác như deleteProject, ...
+
+    private void printSQLException(SQLException ex) {
+        for (Throwable e : ex) {
+            if (e instanceof SQLException) {
+                e.printStackTrace(System.err);
+                System.err.println("SQLState: " + ((SQLException) e).getSQLState());
+                System.err.println("Error Code: " + ((SQLException) e).getErrorCode());
+                System.err.println("Message: " + e.getMessage());
+                Throwable t = ex.getCause();
+                while (t != null) {
+                    System.out.println("Cause: " + t);
+                    t = t.getCause();
                 }
             }
         }
-
-        return project;
-    }
-
-    /**
-     * Phương thức trợ giúp để map ResultSet thành đối tượng Project.
-     *
-     * @param rs ResultSet từ truy vấn cơ sở dữ liệu
-     * @return Đối tượng Project
-     * @throws SQLException Nếu có lỗi khi đọc dữ liệu từ ResultSet
-     */
-    private Project mapResultSetToProject(ResultSet rs) throws SQLException {
-        Project project = new Project();
-        project.setProjectId(rs.getInt("project_id"));
-        project.setName(rs.getString("name"));
-        project.setCode(rs.getString("code"));
-        project.setStartDate(rs.getDate("start_date"));
-        project.setEndDate(rs.getDate("end_date"));
-        project.setStatus(rs.getBoolean("status"));
-        project.setDescription(rs.getString("description"));
-        project.setCreatedAt(rs.getTimestamp("created_at"));
-        project.setUpdatedAt(rs.getTimestamp("updated_at"));
-
-        // Thiết lập Department
-        int deptId = rs.getInt("dept_id");
-        String deptName = rs.getString("dept_name");
-        if (deptId > 0 && deptName != null) {
-            Setting department = new Setting(deptId, deptName);
-            project.setDepartment(department);
-        }
-
-        // Thiết lập CreatedBy User
-        int createdById = rs.getInt("created_by_id");
-        String createdByFullName = rs.getString("created_by_full_name");
-        if (createdById > 0 && createdByFullName != null) {
-            User createdBy = new User();
-            createdBy.setUserId(createdById);
-            createdBy.setFullName(createdByFullName);
-            project.setCreatedBy(createdBy);
-        }
-
-        // Thiết lập UpdatedBy User
-        int updatedById = rs.getInt("updated_by_id");
-        String updatedByFullName = rs.getString("updated_by_full_name");
-        if (updatedById > 0 && updatedByFullName != null) {
-            User updatedBy = new User();
-            updatedBy.setUserId(updatedById);
-            updatedBy.setFullName(updatedByFullName);
-            project.setUpdatedBy(updatedBy);
-        }
-
-        return project;
     }
 }
