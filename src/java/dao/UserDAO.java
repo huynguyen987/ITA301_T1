@@ -231,13 +231,47 @@ public class UserDAO {
         return rowUpdated;
     }
 
-    // Delete a user
+    // Delete a user completely from the database (hard delete)
     public boolean deleteUser(int userId) throws SQLException {
-        boolean rowDeleted;
-        try (Connection connection = DBConnect.getConnection(); PreparedStatement statement = connection.prepareStatement(DELETE_USER_SQL)) {
-            statement.setInt(1, userId);
-            rowDeleted = statement.executeUpdate() > 0;
+        boolean rowDeleted = false;
+        Connection connection = null;
+        PreparedStatement deleteAllocationsStatement = null;
+        PreparedStatement deleteUserStatement = null;
+
+        try {
+            connection = DBConnect.getConnection();
+            connection.setAutoCommit(false); // Start transaction
+
+            // Delete related records from the allocation table
+            String deleteAllocationsSQL = "DELETE FROM allocation WHERE member_id = ?";
+            deleteAllocationsStatement = connection.prepareStatement(deleteAllocationsSQL);
+            deleteAllocationsStatement.setInt(1, userId);
+            deleteAllocationsStatement.executeUpdate();
+
+            // Delete the user from the user table
+            deleteUserStatement = connection.prepareStatement(DELETE_USER_SQL);
+            deleteUserStatement.setInt(1, userId);
+            rowDeleted = deleteUserStatement.executeUpdate() > 0;
+
+            connection.commit(); // Commit transaction if everything is successful
+        } catch (SQLException e) {
+            if (connection != null) {
+                connection.rollback(); // Rollback transaction in case of error
+            }
+            e.printStackTrace();
+        } finally {
+            if (deleteAllocationsStatement != null) {
+                deleteAllocationsStatement.close();
+            }
+            if (deleteUserStatement != null) {
+                deleteUserStatement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
         }
+
         return rowDeleted;
     }
+
 }

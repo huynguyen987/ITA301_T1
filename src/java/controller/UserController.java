@@ -81,6 +81,9 @@ public class UserController extends HttpServlet {
                 case "userDashboard":  // New case for user dashboard
                     showUserDashboard(request, response);
                     break;
+                case "logout": // Handle logout action
+                    logoutUser(request, response);
+                    break;
                 default:
                     listUser(request, response);
                     break;
@@ -186,15 +189,11 @@ public class UserController extends HttpServlet {
         response.sendRedirect(request.getContextPath() + "/user?action=admin");
     }
 
-    // Delete a user
+    // Delete a user (hard delete)
     private void deleteUser(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException {
         int id = Integer.parseInt(request.getParameter("id"));
-        User user = userDAO.selectUser(id);
-        user.setStatus(false);  // Set the user as inactive
-
-        // Update the user instead of deleting
-        userDAO.updateUser(user);
+        userDAO.deleteUser(id);
         response.sendRedirect(request.getContextPath() + "/user?action=admin");
     }
 
@@ -300,6 +299,16 @@ public class UserController extends HttpServlet {
             throws ServletException, IOException {
         RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/user-dashboard.jsp");
         dispatcher.forward(request, response);
+    }
+
+    // Method to handle logout
+    private void logoutUser(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        HttpSession session = request.getSession(false); // Get existing session, do not create a new one
+        if (session != null) {
+            session.invalidate(); // Invalidate the session, logging the user out
+        }
+        response.sendRedirect(request.getContextPath() + "/user?action=login"); // Redirect to login page
     }
 
 }

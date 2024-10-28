@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/admin.css">
 </head>
 <body>
+    <%@ include file="/WEB-INF/jsp/header.jsp" %>
     <div class="admin-container">
         <h2>Admin Dashboard - User Management</h2>
 
@@ -121,5 +122,6 @@
             <p><a href="${pageContext.request.contextPath}/user?action=new">Add New User</a></p>
         <% } %>
     </div>
+    <%@ include file="/WEB-INF/jsp/footer.jsp" %>
 </body>
 </html>
