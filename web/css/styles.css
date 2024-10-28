@@ -1,0 +1,100 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : 28 thg 10, 2024, 14:20:38
+    Author     : mituz
+*/
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+h2 {
+    color: #0056b3;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #0056b3;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Các nút chính */
+button, .button {
+    padding: 8px 16px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 4px;
+    margin-right: 5px;
+    color: white;
+}
+
+.button {
+    text-decoration: none;
+    display: inline-block;
+}
+
+/* Màu sắc cho từng loại nút */
+.button-primary {
+    background-color: #28a745; /* màu xanh lá */
+}
+
+.button-secondary {
+    background-color: #007bff; /* màu xanh dương */
+}
+
+.button-danger {
+    background-color: #dc3545; /* màu đỏ */
+}
+
+.button-warning {
+    background-color: #ffc107; /* màu vàng */
+    color: black;
+}
+
+/* Thêm khoảng cách cho các biểu mẫu */
+form label, form select, form input, form textarea {
+    display: block;
+    margin: 10px 0;
+}
+
+input[type="text"], textarea, select {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+button[type="submit"] {
+    background-color: #28a745;
+    color: white;
+    font-weight: bold;
+}
+
+a.button {
+    color: white;
+    text-decoration: none;
+}
