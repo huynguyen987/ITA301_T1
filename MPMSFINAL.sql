@@ -1,7 +1,7 @@
 -- Create DATABASE and USE it
-drop database if exists MPMS_1;
-CREATE DATABASE IF NOT EXISTS MPMS_1;
-USE MPMS_1;
+drop database if exists mpms_1;
+CREATE DATABASE IF NOT EXISTS mpms_1;
+USE mpms_1;
 
 -- Set up initial configurations
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -37,7 +37,7 @@ CREATE TABLE `allocation` (
   CONSTRAINT `fk_allocation_project` FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`),
   CONSTRAINT `fk_allocation_project_role` FOREIGN KEY (`project_role_id`) REFERENCES `setting` (`setting_id`),
   CONSTRAINT `fk_allocation_updated_by` FOREIGN KEY (`updated_by_id`) REFERENCES `user` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Table structure for table `issue`
 DROP TABLE IF EXISTS `issue`;
@@ -61,8 +61,9 @@ CREATE TABLE `issue` (
   CONSTRAINT `fk_issue_assigner` FOREIGN KEY (`assigner_id`) REFERENCES `user` (`user_id`),
   CONSTRAINT `fk_issue_created_by` FOREIGN KEY (`created_by_id`) REFERENCES `user` (`user_id`),
   CONSTRAINT `fk_issue_req` FOREIGN KEY (`req_id`) REFERENCES `requirement` (`req_id`),
+  CONSTRAINT `fk_issue_type` FOREIGN KEY (`type_id`) REFERENCES `setting` (`setting_id`),
   CONSTRAINT `fk_issue_updated_by` FOREIGN KEY (`updated_by_id`) REFERENCES `user` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Table structure for table `project`
 DROP TABLE IF EXISTS `project`;
@@ -84,7 +85,7 @@ CREATE TABLE `project` (
   CONSTRAINT `fk_project_created_by` FOREIGN KEY (`created_by_id`) REFERENCES `user` (`user_id`),
   CONSTRAINT `fk_project_department` FOREIGN KEY (`dept_id`) REFERENCES `setting` (`setting_id`),
   CONSTRAINT `fk_project_updated_by` FOREIGN KEY (`updated_by_id`) REFERENCES `user` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Table structure for table `requirement`
 DROP TABLE IF EXISTS `requirement`;
@@ -105,7 +106,7 @@ CREATE TABLE `requirement` (
   CONSTRAINT `fk_requirement_owner` FOREIGN KEY (`owner_id`) REFERENCES `user` (`user_id`),
   CONSTRAINT `fk_requirement_status` FOREIGN KEY (`status_id`) REFERENCES `setting` (`setting_id`),
   CONSTRAINT `fk_requirement_updated_by` FOREIGN KEY (`updated_by_id`) REFERENCES `user` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Table structure for table `setting`
 DROP TABLE IF EXISTS `setting`;
@@ -124,7 +125,7 @@ CREATE TABLE `setting` (
   PRIMARY KEY (`setting_id`),
   CONSTRAINT `fk_setting_created_by` FOREIGN KEY (`created_by_id`) REFERENCES `user` (`user_id`),
   CONSTRAINT `fk_setting_updated_by` FOREIGN KEY (`updated_by_id`) REFERENCES `user` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Table structure for table `user`
 DROP TABLE IF EXISTS `user`;
@@ -150,7 +151,7 @@ CREATE TABLE `user` (
   CONSTRAINT `fk_user_department` FOREIGN KEY (`dept_id`) REFERENCES `setting` (`setting_id`),
   CONSTRAINT `fk_user_created_by` FOREIGN KEY (`created_by_id`) REFERENCES `user` (`user_id`),
   CONSTRAINT `fk_user_updated_by` FOREIGN KEY (`updated_by_id`) REFERENCES `user` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Insert initial data into `setting` table with categorized values in the `value` column
 
@@ -167,6 +168,7 @@ VALUES
 ('Staff', 'User Role', 2, 2, b'1', 'User role', 1, 1),
 ('Team Leader', 'User Role', 2, 3, b'1', 'User role', 1, 1),
 ('Project Leader', 'User Role', 2, 4, b'1', 'User role', 1, 1),
+('Department Leader', 'User Role', 2, 5, b'1', 'User role', 1, 1),
 
 -- Departments
 ('Development', 'Department', 3, 1, b'1', 'Department', 1, 1),
@@ -183,74 +185,51 @@ VALUES
 ('Pending', 'Requirement Status', 5, 1, b'1', 'Requirement status', 1, 1),
 ('In-progress', 'Requirement Status', 5, 2, b'1', 'Requirement status', 1, 1),
 ('Closed', 'Requirement Status', 5, 3, b'1', 'Requirement status', 1, 1),
-('Cancelled', 'Requirement Status', 5, 4, b'1', 'Requirement status', 1, 1);
+('Cancelled', 'Requirement Status', 5, 4, b'1', 'Requirement status', 1, 1),
 
--- Thêm dữ liệu mẫu vào bảng `project`
-INSERT INTO `project` (`name`, `code`, `start_date`, `end_date`, `dept_id`, `status`, `description`, `created_by_id`, `updated_by_id`)
-VALUES
-('Website Redesign', 'P001', '2022-01-01', '2022-03-01', 1, b'01', 'Redesign company website', 1, 1),
-('Marketing Campaign', 'P002', '2022-01-15', '2022-04-15', 2, b'10', 'Launch marketing campaign', 2, 2),
-('Mobile App Development', 'P003', '2022-02-01', '2022-06-01', 1, b'10', 'Develop mobile app', 3, 3),
-('SEO Optimization', 'P004', '2022-02-20', '2022-05-20', 2, b'10', 'Optimize website for SEO', 4, 4),
-('New Feature Implementation', 'P005', '2022-03-01', '2022-06-01', 1, b'01', 'Implement new features', 5, 5),
-('Product Launch', 'P006', '2022-03-15', '2022-07-15', 2, b'01', 'Launch new product', 6, 6),
-('Customer Support System', 'P007', '2022-04-01', '2022-08-01', 1, b'10', 'Develop support system', 7, 7),
-('Cloud Migration', 'P008', '2022-05-01', '2022-09-01', 1, b'01', 'Migrate systems to the cloud', 8, 8),
-('E-commerce Platform', 'P009', '2022-05-20', '2022-09-20', 2, b'01', 'Develop e-commerce platform', 9, 9),
-('CRM System Update', 'P010', '2022-06-01', '2022-10-01', 3, b'01', 'Update CRM system for customer management', 10, 10);
+-- Issue Types
+('Bug', 'Issue Type', 6, 1, b'1', 'Issue type in the project management system', 1, 1),
+('Feature', 'Issue Type', 6, 2, b'1', 'Issue type in the project management system', 1, 1),
+('Task', 'Issue Type', 6, 3, b'1', 'Issue type in the project management system', 1, 1),
+('Improvement', 'Issue Type', 6, 4, b'1', 'Issue type in the project management system', 1, 1);
 
--- Thêm dữ liệu mẫu vào bảng `user`
+-- Insert dữ liệu thực tế cho bảng `user`
 INSERT INTO `user` (`full_name`, `user_name`, `email`, `password`, `role_id`, `dept_id`, `start_date`, `status`, `note`, `created_by_id`, `updated_by_id`)
 VALUES
-('John Doe', 'jdoe', 'jdoe@example.com', 'password123', 1, 1, '2022-01-01', b'1', 'Admin user', 1, 1),
-('Jane Smith', 'jsmith', 'jsmith@example.com', 'password123', 2, 2, '2022-01-15', b'1', 'Marketing specialist', 1, 1),
-('Michael Johnson', 'mjohnson', 'mjohnson@example.com', 'password123', 3, 1, '2022-02-01', b'1', 'Developer', 1, 1),
-('Emily Davis', 'edavis', 'edavis@example.com', 'password123', 4, 1, '2022-02-10', b'1', 'Team Leader', 1, 1),
-('David Wilson', 'dwilson', 'dwilson@example.com', 'password123', 1, 1, '2022-02-20', b'1', 'Admin user', 1, 1),
-('Sarah Brown', 'sbrown', 'sbrown@example.com', 'password123', 2, 2, '2022-03-01', b'1', 'Marketing manager', 1, 1),
-('Chris Lee', 'clee', 'clee@example.com', 'password123', 3, 1, '2022-03-10', b'1', 'Developer', 1, 1),
-('Olivia Martin', 'omartin', 'omartin@example.com', 'password123', 4, 2, '2022-03-15', b'1', 'Team Leader', 1, 1),
-('James White', 'jwhite', 'jwhite@example.com', 'password123', 1, 3, '2022-04-01', b'1', 'Finance manager', 1, 1),
-('Sophia Harris', 'sharris', 'sharris@example.com', 'password123', 2, 3, '2022-04-10', b'1', 'Finance specialist', 1, 1);
+('Alice Johnson', 'alice.j', 'alice.johnson@company.com', 'alice_pass', 5, 10, '2023-01-02', b'1', 'Quản trị viên hệ thống', 1, 1),
+('Bob Smith', 'bob.smith', 'bob.smith@company.com', 'bob_pass', 6, 11, '2023-01-15', b'1', 'Trưởng nhóm phát triển', 1, 1),
+('Charlie Brown', 'charlie.b', 'charlie.brown@company.com', 'charlie_pass', 7, 10, '2023-02-01', b'1', 'Trưởng dự án phụ trách dự án Alpha', 1, 1),
+('Dana White', 'dana.w', 'dana.white@company.com', 'dana_pass', 8, 12, '2023-03-12', b'1', 'Nhân viên marketing phụ trách dự án Beta', 1, 1),
+('Eve Adams', 'eve.adams', 'eve.adams@company.com', 'eve_pass', 9, 13, '2023-04-05', b'1', 'Nhân viên tài chính', 1, 1);
 
--- Thêm dữ liệu mẫu vào bảng `requirement`
+-- Insert dữ liệu thực tế cho bảng `project`
+INSERT INTO `project` (`name`, `code`, `start_date`, `end_date`, `dept_id`, `status`, `description`, `created_by_id`, `updated_by_id`)
+VALUES
+('Website Redesign', 'WD2023', '2023-01-10', '2023-06-30', 10, b'01', 'Dự án thiết kế lại trang web công ty', 1, 1),
+('Product Launch Campaign', 'PLC2023', '2023-03-01', '2023-07-01', 11, b'01', 'Chiến dịch ra mắt sản phẩm mới', 1, 1),
+('Financial System Update', 'FSU2023', '2023-04-15', '2023-09-15', 12, b'01', 'Cập nhật hệ thống tài chính nội bộ', 1, 1),
+('Employee Training Program', 'ETP2023', '2023-02-20', '2023-08-20', 13, b'01', 'Chương trình đào tạo cho nhân viên mới', 1, 1);
+
+-- Insert dữ liệu thực tế cho bảng `requirement`
 INSERT INTO `requirement` (`title`, `owner_id`, `complexity_id`, `status_id`, `description`, `created_by_id`, `updated_by_id`)
 VALUES
-('Responsive Design', 1, 1, 1, 'Create responsive design for website', 1, 1),
-('SEO Keyword Research', 2, 2, 2, 'Research SEO keywords for campaign', 2, 2),
-('User Authentication', 3, 1, 3, 'Implement user authentication', 3, 3),
-('Content Strategy', 4, 2, 4, 'Develop content strategy for marketing', 4, 4),
-('Push Notifications', 5, 3, 1, 'Add push notifications to mobile app', 5, 5),
-('Server Migration', 6, 3, 2, 'Migrate server to cloud', 6, 6),
-('Marketing Material Creation', 7, 2, 3, 'Create marketing materials for campaign', 7, 7),
-('Database Optimization', 8, 3, 4, 'Optimize database for performance', 8, 8),
-('API Development', 9, 3, 1, 'Develop APIs for e-commerce platform', 9, 9),
-('User Onboarding', 10, 2, 2, 'Implement user onboarding flow', 10, 10);
+('Responsive Layout', 2, 14, 18, 'Thiết kế layout đáp ứng cho trang web trên các thiết bị di động', 1, 1),
+('SEO Optimization', 2, 15, 19, 'Tối ưu hóa SEO cho nội dung trang web', 1, 1),
+('Data Migration', 3, 14, 19, 'Di chuyển dữ liệu từ hệ thống cũ sang hệ thống tài chính mới', 1, 1),
+('Employee Onboarding Module', 4, 16, 20, 'Xây dựng module đào tạo nhân viên mới', 1, 1);
 
--- Thêm dữ liệu mẫu vào bảng `allocation`
+-- Insert dữ liệu thực tế cho bảng `allocation`
 INSERT INTO `allocation` (`member_id`, `project_id`, `project_role_id`, `from_date`, `to_date`, `effort_rate`, `description`, `status`, `created_by_id`, `updated_by_id`)
 VALUES
-(1, 1, 1, '2022-01-01', '2022-03-01', 100.00, 'Project manager for website redesign', b'1', 1, 1),
-(2, 2, 2, '2022-01-15', '2022-04-15', 75.00, 'Frontend developer for marketing campaign', b'1', 2, 2),
-(3, 3, 2, '2022-02-01', '2022-06-01', 100.00, 'Lead developer for mobile app', b'1', 3, 3),
-(4, 4, 3, '2022-02-20', '2022-05-20', 50.00, 'Tester for SEO optimization', b'1', 4, 4),
-(5, 5, 1, '2022-03-01', '2022-06-01', 50.00, 'Project manager for new feature implementation', b'1', 5, 5),
-(6, 6, 2, '2022-03-15', '2022-07-15', 100.00, 'Developer for product launch', b'1', 6, 6),
-(7, 7, 3, '2022-04-01', '2022-08-01', 50.00, 'Tester for customer support system', b'1', 7, 7),
-(8, 8, 2, '2022-05-01', '2022-09-01', 100.00, 'Developer for cloud migration', b'1', 8, 8),
-(9, 9, 1, '2022-05-20', '2022-09-20', 75.00, 'Project manager for e-commerce platform', b'1', 9, 9),
-(10, 10, 2, '2022-06-01', '2022-10-01', 100.00, 'Developer for CRM system update', b'1', 10, 10);
+(2, 1, 1, '2023-01-10', '2023-06-30', 0.9, 'Quản lý dự án Website Redesign', b'1', 1, 1),
+(3, 3, 1, '2023-04-15', '2023-09-15', 0.8, 'Quản lý dự án Financial System Update', b'1', 1, 1),
+(4, 2, 4, '2023-03-01', '2023-07-01', 0.6, 'Phụ trách marketing cho Product Launch Campaign', b'1', 1, 1),
+(5, 4, 2, '2023-02-20', '2023-08-20', 0.7, 'Tài chính cho chương trình đào tạo nhân viên', b'1', 1, 1);
 
--- Thêm dữ liệu mẫu vào bảng `issue`
+-- Insert dữ liệu thực tế cho bảng `issue`
 INSERT INTO `issue` (`title`, `type_id`, `req_id`, `assigner_id`, `assignee_id`, `deadline`, `status_id`, `description`, `created_by_id`, `updated_by_id`)
 VALUES
-('Fix mobile layout', 1, 1, 1, 2, '2022-03-01', b'001', 'Fix mobile layout for website', 1, 1),
-('Improve SEO ranking', 2, 2, 2, 3, '2022-03-15', b'010', 'Improve SEO ranking', 2, 2),
-('Authentication bug', 1, 3, 3, 4, '2022-03-20', b'011', 'Fix authentication timeout issue', 3, 3),
-('Content mismatch', 2, 4, 4, 5, '2022-04-01', b'001', 'Content mismatch with marketing strategy', 4, 4),
-('Push notification delay', 1, 5, 5, 6, '2022-04-05', b'010', 'Push notifications are delayed', 5, 5),
-('Server downtime', 1, 6, 6, 7, '2022-04-10', b'011', 'Server downtime during migration', 6, 6),
-('Marketing material delay', 2, 7, 7, 8, '2022-04-15', b'100', 'Marketing materials delayed', 7, 7),
-('Database query performance', 1, 8, 8, 9, '2022-04-20', b'001', 'Slow database queries', 8, 8),
-('API authentication issue', 1, 9, 9, 10, '2022-04-25', b'010', 'Issue with API authentication', 9, 9),
-('User onboarding flow bug', 1, 10, 10, 1, '2022-05-01', b'011', 'Bug in user onboarding flow', 10, 10);
+('Fix layout issue on mobile', 21, 1, 2, 3, '2023-05-15', b'001', 'Lỗi layout không hiển thị đúng trên màn hình di động', 1, 1),
+('Optimize images for SEO', 22, 2, 2, 3, '2023-06-10', b'001', 'Tối ưu hóa hình ảnh để cải thiện SEO', 1, 1),
+('Migrate financial records', 23, 3, 3, 4, '2023-08-01', b'001', 'Di chuyển dữ liệu tài chính năm 2022 vào hệ thống mới', 1, 1),
+('Update training content', 34, 4, 4, 5, '2023-07-15', b'001', 'Cập nhật nội dung đào tạo mới cho nhân viên', 1, 1);
