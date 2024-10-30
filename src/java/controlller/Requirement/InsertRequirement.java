@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 /**
  *
- * @author mituz
+ * @author Acer
  */
 public class InsertRequirement extends HttpServlet {
     private final RequirementDAO requirementDAO = new RequirementDAO();

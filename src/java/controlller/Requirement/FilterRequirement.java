@@ -17,7 +17,7 @@ import model.Setting;
 
 /**
  *
- * @author mituz
+ * @author Acer
  */
 public class FilterRequirement extends HttpServlet {
     private final RequirementDAO requirementDAO = new RequirementDAO();

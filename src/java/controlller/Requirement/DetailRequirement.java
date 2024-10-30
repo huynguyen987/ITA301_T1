@@ -15,7 +15,7 @@ import model.Requirement;
 
 /**
  *
- * @author mituz
+ * @author Acer
  */
 public class DetailRequirement extends HttpServlet {
     private final RequirementDAO requirementDAO = new RequirementDAO();
