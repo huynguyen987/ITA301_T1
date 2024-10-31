@@ -2,7 +2,6 @@ package controller;
 
 import model.Setting;
 import service.SettingService;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;

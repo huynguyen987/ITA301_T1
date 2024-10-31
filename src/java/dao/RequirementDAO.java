@@ -9,16 +9,18 @@ import model.User;
 import service.DBConnect;
 
 public class RequirementDAO {
+
     private Connection connection = null;
-    
+
     public RequirementDAO() {
         try {
-            connection = DBConnect.getConnection(); 
-        } catch(Exception e) {}
+            connection = DBConnect.getConnection();
+        } catch (Exception e) {
+        }
     }
 
     // 1. List all requirements with owner, complexity, and status details
-    public List<Requirement> listAllRequirements() {
+    public List<Requirement> listAllRequirements() throws SQLException {
         List<Requirement> requirements = new ArrayList<>();
         String sql = """
                 SELECT requirement.req_id,requirement.title, user.full_name AS owner_name, 
@@ -59,7 +61,7 @@ public class RequirementDAO {
     //done
 
     // 2. Requirement details with all information
-    public Requirement getRequirementDetails(int reqId) {
+    public Requirement getRequirementDetails(int reqId) throws SQLException {
         String sql = """
                 SELECT requirement.title, requirement.description, requirement.created_at, requirement.req_id,
                        requirement.updated_at, owner.full_name AS owner_name, complexity.name AS complexity_level,
@@ -115,7 +117,7 @@ public class RequirementDAO {
     //done
 
     // 3. Update a requirement
-    public boolean updateRequirement(int reqId, String title, int ownerId, String description, int complexityId, int statusId) {
+    public boolean updateRequirement(int reqId, String title, int ownerId, String description, int complexityId, int statusId) throws SQLException {
         String sql = """
             UPDATE requirement
             SET title = ?, owner_id = ?, description = ?, complexity_id = ?, status_id = ?, updated_at = CURRENT_TIMESTAMP
@@ -155,7 +157,7 @@ public class RequirementDAO {
     }
 
     // 4. Delete a requirement
-    public boolean deleteRequirement(int reqId) {
+    public boolean deleteRequirement(int reqId) throws SQLException {
         String deleteIssuesSql = "DELETE FROM issue WHERE req_id = ?;";
         String deleteRequirementSql = "DELETE FROM requirement WHERE req_id = ?;";
         try {
@@ -190,7 +192,7 @@ public class RequirementDAO {
         return false;
     }
 
-    public boolean canDeleteRequirement(int reqId) {
+    public boolean canDeleteRequirement(int reqId) throws SQLException {
         String sql = "SELECT COUNT(*) FROM issue WHERE req_id = ?;";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, reqId);
@@ -206,7 +208,7 @@ public class RequirementDAO {
     }
 
     // 5. Insert a new requirement
-    public boolean insertRequirement(String title, int ownerId, int complexityId, int statusId, String description) {
+    public boolean insertRequirement(String title, int ownerId, int complexityId, int statusId, String description) throws SQLException {
         String sql = """
                 INSERT INTO requirement (title, owner_id, complexity_id, status_id, created_at, description)
                 VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?);
@@ -225,7 +227,7 @@ public class RequirementDAO {
     }
 
     // 6. Filter requirements
-    public List<Requirement> filterRequirements(int complexityId, int statusId) {
+    public List<Requirement> filterRequirements(int complexityId, int statusId) throws SQLException {
         List<Requirement> requirements = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
                 "SELECT requirement.req_id, requirement.title, user.full_name AS owner_name, "
@@ -285,7 +287,7 @@ public class RequirementDAO {
     }
 
     // 7. Search requirements by title
-    public List<Requirement> searchRequirementsByTitle(String title) {
+    public List<Requirement> searchRequirementsByTitle(String title) throws SQLException {
         String sql = """
                 SELECT requirement.req_id,requirement.title, user.full_name AS owner_name, complexity.name AS complexity_level,
                        status.name AS requirement_status, requirement.description
@@ -328,16 +330,16 @@ public class RequirementDAO {
     }
 
     // Lấy danh sách Setting cho Complexity (loại 4)
-    public List<Setting> getComplexitySettings() {
+    public List<Setting> getComplexitySettings() throws SQLException {
         return getSettingsByType(4); // Giả định rằng type 4 là cho complexity
     }
 
     // Lấy danh sách Setting cho Status (loại 5)
-    public List<Setting> getStatusSettings() {
+    public List<Setting> getStatusSettings() throws SQLException {
         return getSettingsByType(5); // Giả định rằng type 5 là cho status
     }
 
-    private List<Setting> getSettingsByType(int type) {
+    private List<Setting> getSettingsByType(int type) throws SQLException {
         List<Setting> settings = new ArrayList<>();
         String sql = "SELECT setting_id, name FROM setting WHERE type = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -356,18 +358,4 @@ public class RequirementDAO {
         return settings;
     }
 
-    public static void main(String[] args) {
-        RequirementDAO dao = new RequirementDAO();
-
-        // Kiểm tra từng phương thức ở đây
-//        System.out.println("All Requirements: " + dao.listAllRequirements());
-//        System.out.println("Requirement Details: " + dao.getRequirementDetails(1));
-//        System.out.println("Search Requirements: " + dao.searchRequirementsByTitle("Test"));
-//        System.out.println("Filtered Requirements: " + dao.filterRequirements(2, 1));
-//        System.out.println("Insert Requirement: " + dao.insertRequirement("New Requirement", 1, 2, 3, "Sample description"));
-//        System.out.println("Update Requirement: " + dao.updateRequirement(1, "Updated Requirement", 1, "Updated description", 2, 1));
-//        System.out.println("Delete Requirement: " + dao.deleteRequirement(2));
-//        System.out.println(dao.updateRequirement(5, "New ", 1, "Sample description", 2, 3));
-System.out.println(dao.getRequirementDetails(5));
-    }
 }

@@ -48,6 +48,9 @@
             <div class="col-md-4 mb-3">
                 <a href="${pageContext.request.contextPath}/settings" class="btn btn-info btn-lg w-100">View Setting</a>
             </div>
+            <div class="col-md-4 mb-3">
+                <a href="requirement" class="btn btn-info btn-lg w-100">View Requirement</a>
+            </div>
             <!-- Th?m c?c n?t kh?c n?u c?n -->
         </div>
     </div>

@@ -16,6 +16,8 @@ import jakarta.servlet.http.HttpSession;
 import model.Setting;
 import model.User;
 
+
+
 @WebServlet("/user")
 public class UserController extends HttpServlet {
 
@@ -27,6 +29,7 @@ public class UserController extends HttpServlet {
     public void init() {
         userDAO = new UserDAO();
         settingDAO = new SettingDAO();
+        
     }
 
     @Override
@@ -310,5 +313,6 @@ public class UserController extends HttpServlet {
         }
         response.sendRedirect(request.getContextPath() + "/user?action=login"); // Redirect to login page
     }
+
 
 }

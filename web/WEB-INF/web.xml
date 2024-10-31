@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
-<!--    <servlet>
+    <!--    <servlet>
         <servlet-name>ProjectServlet</servlet-name>
         <servlet-class>controller.ProjectServlet</servlet-class>
     </servlet>
@@ -9,5 +9,68 @@
         <servlet-name>ProjectServlet</servlet-name>
         <url-pattern>/projects</url-pattern>
     </servlet-mapping>-->
-
+    <servlet>
+        <servlet-name>DeleteRequirement</servlet-name>
+        <servlet-class>controller.Requirement.DeleteRequirement</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DetailRequirement</servlet-name>
+        <servlet-class>controller.Requirement.DetailRequirement</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>FilterRequirement</servlet-name>
+        <servlet-class>controller.Requirement.FilterRequirement</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>InsertRequirement</servlet-name>
+        <servlet-class>controller.Requirement.InsertRequirement</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ListRequirement</servlet-name>
+        <servlet-class>controller.Requirement.ListRequirement</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SearchRequirement</servlet-name>
+        <servlet-class>controller.Requirement.SearchRequirement</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateRequirement</servlet-name>
+        <servlet-class>controller.Requirement.UpdateRequirement</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>RequirementController</servlet-name>
+        <servlet-class>controller.RequirementController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DeleteRequirement</servlet-name>
+        <url-pattern>/deleteRequirement</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DetailRequirement</servlet-name>
+        <url-pattern>/detailRequirement</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FilterRequirement</servlet-name>
+        <url-pattern>/filterRequirement</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>InsertRequirement</servlet-name>
+        <url-pattern>/insertRequirement</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ListRequirement</servlet-name>
+        <url-pattern>/listRequirement</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SearchRequirement</servlet-name>
+        <url-pattern>/searchRequirement</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateRequirement</servlet-name>
+        <url-pattern>/updateRequirement</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RequirementController</servlet-name>
+        <url-pattern>/requirement</url-pattern>
+    </servlet-mapping>
 </web-app>
