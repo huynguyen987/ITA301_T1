@@ -3,16 +3,21 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/Users/ACER/OneDrive/Documents/GitHub/ITA301_T1/src/java/controller/Requirement/ListRequirement.java</file>
+            <file>file:/C:/Users/ACER/OneDrive/Documents/GitHub/ITA301_T1/src/java/service/DBConnect.java</file>
+            <file>file:/C:/Users/ACER/OneDrive/Documents/GitHub/ITA301_T1/src/java/controller/Requirement/SearchRequirement.java</file>
+            <file>file:/C:/Users/ACER/OneDrive/Documents/GitHub/ITA301_T1/src/java/controller/Requirement/InsertRequirement.java</file>
+            <file>file:/C:/Users/ACER/OneDrive/Documents/GitHub/ITA301_T1/web/WEB-INF/web.xml</file>
+            <file>file:/C:/Users/ACER/OneDrive/Documents/GitHub/ITA301_T1/src/java/controller/Requirement/DetailRequirement.java</file>
+            <file>file:/C:/Users/ACER/OneDrive/Documents/GitHub/ITA301_T1/src/java/controller/Requirement/FilterRequirement.java</file>
             <file>file:/C:/Users/ACER/OneDrive/Documents/GitHub/ITA301_T1/web/WEB-INF/View/Requirement/updateRequirement.jsp</file>
             <file>file:/C:/Users/ACER/OneDrive/Documents/GitHub/ITA301_T1/web/WEB-INF/View/Requirement/detailRequirement.jsp</file>
-            <file>file:/C:/Users/ACER/OneDrive/Documents/GitHub/ITA301_T1/web/WEB-INF/View/Requirement/error.jsp</file>
             <file>file:/C:/Users/ACER/OneDrive/Documents/GitHub/ITA301_T1/src/java/controller/RequirementController.java</file>
+            <file>file:/C:/Users/ACER/OneDrive/Documents/GitHub/ITA301_T1/src/java/dao/RequirementDAO.java</file>
             <file>file:/C:/Users/ACER/OneDrive/Documents/GitHub/ITA301_T1/web/WEB-INF/View/Requirement/insertRequirement.jsp</file>
             <file>file:/C:/Users/ACER/OneDrive/Documents/GitHub/ITA301_T1/web/WEB-INF/View/Requirement/listRequirement.jsp</file>
-            <file>file:/C:/Users/ACER/OneDrive/Documents/GitHub/ITA301_T1/src/java/dao/RequirementDAO.java</file>
+            <file>file:/C:/Users/ACER/OneDrive/Documents/GitHub/ITA301_T1/src/java/controller/Requirement/UpdateRequirement.java</file>
             <file>file:/C:/Users/ACER/OneDrive/Documents/GitHub/ITA301_T1/src/java/controller/Requirement/DeleteRequirement.java</file>
-            <file>file:/C:/Users/ACER/OneDrive/Documents/GitHub/ITA301_T1/src/java/controller/Requirement/DetailRequirement.java</file>
-            <file>file:/C:/Users/ACER/OneDrive/Documents/GitHub/ITA301_T1/web/WEB-INF/View/Requirement/confirmDelete.jsp</file>
         </group>
     </open-files>
 </project-private>
